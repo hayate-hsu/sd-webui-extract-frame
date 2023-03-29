@@ -10,6 +10,12 @@ img_formats = ['bmp', 'jpg', 'jpeg', 'png', 'tif', 'tiff', 'dng', 'webp', 'mpo']
 vid_formats = ['mov', 'avi', 'mp4', 'mpg', 'mpeg', 'm4v', 'wmv', 'mkv']  # acceptable video suffixes
 
 
+def _imwrite(img, save_path,suffix):
+    '''
+        解决写入图片路径包含中文的问题
+    '''
+    cv2.imencode(suffix,img)[1].tofile(save_path)
+
 def extract_frame(vedio_path, output_folder, start,stride, fmt='png'):
     '''
         vedio_path: input vedio path
@@ -48,7 +54,8 @@ def extract_frame(vedio_path, output_folder, start,stride, fmt='png'):
         if (iframe%stride == 0):
             nums += 1
             save_path = output_folder/'{:06d}.{}'.format(nums,fmt)
-            cv2.imwrite(str(save_path), frame)
+            # cv2.imwrite(str(save_path), frame)
+            _imwrite(frame, save_path, fmt)     
         success, frame = vid_cap.read()
               
     vid_cap.release()
