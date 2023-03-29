@@ -13,8 +13,7 @@ vid_formats = ['mov', 'avi', 'mp4', 'mpg', 'mpeg', 'm4v', 'wmv', 'mkv']  # accep
 def extract_frame(vedio_path, output_folder, start,stride, fmt='png'):
     '''
         vedio_path: input vedio path
-        output_folder: folder to save extracted frames, if not existed crated it, if existed add num suffix,and +1. 
-            eg: output --> output2,output3...
+        output_folder: folder to save extracted frames, if not existed crated it
         start: From which frame to start extracting
         stride: skip stride frames to extract frames
         fmt: saved image format(suffix). can be any value of img_formats,default format is png.
@@ -40,8 +39,9 @@ def extract_frame(vedio_path, output_folder, start,stride, fmt='png'):
     print('vedio fps:{}, width*height={}*{}'.format(fps,w,h))
     
     success, frame = vid_cap.read()
-    iframe,nums = 1,0
+    iframe,nums = 0,0
     while success:
+        iframe += 1
         if iframe < start:
             # skip start frames
             continue
@@ -50,7 +50,6 @@ def extract_frame(vedio_path, output_folder, start,stride, fmt='png'):
             save_path = output_folder/'{:06d}.{}'.format(nums,fmt)
             cv2.imwrite(str(save_path), frame)
         success, frame = vid_cap.read()
-        iframe += 1
               
     vid_cap.release()
     return fps,w,h,nums
