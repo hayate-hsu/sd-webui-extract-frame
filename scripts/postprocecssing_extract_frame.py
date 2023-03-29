@@ -55,7 +55,7 @@ def extract_frame(vedio_path, output_folder, start,stride, fmt='png'):
             nums += 1
             save_path = output_folder/'{:06d}.{}'.format(nums,fmt)
             # cv2.imwrite(str(save_path), frame)
-            _imwrite(frame, save_path, fmt)     
+            _imwrite(frame, save_path, '.'+fmt)     
         success, frame = vid_cap.read()
               
     vid_cap.release()
