@@ -10,8 +10,14 @@ img_formats = ['bmp', 'jpg', 'jpeg', 'png', 'tif', 'tiff', 'dng', 'webp', 'mpo']
 vid_formats = ['mov', 'avi', 'mp4', 'mpg', 'mpeg', 'm4v', 'wmv', 'mkv']  # acceptable video suffixes
 
 
-def extract_frame(vedio_path, output_folder, stride, fmt='png'):
+def extract_frame(vedio_path, output_folder, start,stride, fmt='png'):
     '''
+        vedio_path: input vedio path
+        output_folder: folder to save extracted frames, if not existed crated it, if existed add num suffix,and +1. 
+            eg: output --> output2,output3...
+        start: From which frame to start extracting
+        stride: skip stride frames to extract frames
+        fmt: saved image format(suffix). can be any value of img_formats,default format is png.
     '''
     if not os.path.isfile(vedio_path):
         # 0 调用本地摄像头,current support
@@ -19,6 +25,8 @@ def extract_frame(vedio_path, output_folder, stride, fmt='png'):
         return
     
     assert vedio_path.split('.')[-1].lower() in vid_formats, 'please check input vedio({}) path'.format(vedio_path)
+    assert (start>=0 and stride>=0), 'start：{} and stride：{} must be positive'.format(start, stride)
+    
     output_folder = Path(output_folder)
     output_folder.mkdir(parents=True, exist_ok=True)  # make dir
     
@@ -34,6 +42,9 @@ def extract_frame(vedio_path, output_folder, stride, fmt='png'):
     success, frame = vid_cap.read()
     iframe,nums = 1,0
     while success:
+        if iframe < start:
+            # skip start frames
+            continue
         if (iframe%stride == 0):
             nums += 1
             save_path = output_folder/'{:06d}.{}'.format(nums,fmt)
@@ -56,7 +67,8 @@ def add_tab():
                     folder = gr.Textbox(label='Extracted folder name')
 
                 with gr.Row():
-                    tride = gr.Number(label='stride', value=20)
+                    tride = gr.Number(label='stride', value=20, precision=0)
+                    start = gr.Number(label='start', value=1, precision=0)  
                     fmt = gr.Dropdown(label="frame save format", choices=img_formats, value="png")
 
                 extract_btn = gr.Button(elem_id="extract frame", label="Extract",
@@ -76,6 +88,7 @@ def add_tab():
                 inputs=[
                     vedio_path,
                     folder,
+                    start,
                     tride, 
                     fmt
                 ],
